@@ -4,58 +4,138 @@
 
 ### 1.1 클래스와 상속
 
+객체지향 프로그래밍(OOP)은 실제 세계의 개체를 모델링하는 방식으로 소프트웨어를 설계하는 패러다임입니다. Dart는 완전한 객체지향 언어로, 모든 값이 객체입니다.
+
 #### 기본 클래스 정의
+
+**클래스란?**
+클래스는 객체의 청사진 또는 템플릿으로, 데이터(속성)와 행동(메서드)을 정의합니다. Dart에서 클래스를 정의할 때는 `class` 키워드를 사용합니다.
+
 ```dart
 class Person {
-  String name;
+  // 인스턴스 변수(속성)
+  String name;  // non-nullable 변수 (null 안전성이 활성화된 경우 초기화 필요)
   int age;
   
-  // 생성자
+  // 생성자: 객체를 초기화하는 특별한 메서드
+  // this.name, this.age는 생성자 매개변수를 동일한 이름의 인스턴스 변수에 자동 할당
   Person(this.name, this.age);
   
-  // 명명된 생성자
+  // 명명된 생성자: 여러 방식으로 객체를 초기화할 수 있게 해줌
   Person.guest() {
-    name = '손님';
+    name = '손님';  // 명시적 초기화
     age = 0;
   }
   
+  // 인스턴스 메서드: 객체의 행동 정의
   void introduce() {
+    // string interpolation ($변수명) 사용
     print('안녕하세요, 저는 $name이고 $age살입니다.');
   }
 }
 ```
 
+**설명:**
+1. **인스턴스 변수:** `name`과 `age`는 각 객체가 가지는 데이터를 저장합니다.
+2. **생성자:** 객체 생성 시 호출되며, 인스턴스 변수를 초기화합니다. `this.변수명` 문법은 매개변수를 같은 이름의 인스턴스 변수에 자동 할당합니다.
+3. **명명된 생성자:** 클래스명.식별자() 형태로, 객체를 다양한 방식으로 초기화할 수 있게 해줍니다.
+4. **메서드:** 객체가 수행할 수 있는 행동을 정의합니다.
+
+**사용 예시:**
+```dart
+void main() {
+  // 기본 생성자 사용
+  var person1 = Person('홍길동', 30);
+  person1.introduce();  // 출력: 안녕하세요, 저는 홍길동이고 30살입니다.
+  
+  // 명명된 생성자 사용
+  var person2 = Person.guest();
+  person2.introduce();  // 출력: 안녕하세요, 저는 손님이고 0살입니다.
+}
+```
+
 #### 상속과 메서드 오버라이드
+
+**상속이란?**
+상속은 기존 클래스(부모 클래스)의 특성을 새로운 클래스(자식 클래스)가 물려받는 객체지향 프로그래밍의 핵심 개념입니다. Dart에서는 `extends` 키워드를 사용하여 상속을 구현합니다.
+
 ```dart
 class Student extends Person {
+  // 추가 인스턴스 변수
   String school;
   
+  // 자식 클래스 생성자
+  // super(name, age)는 부모 클래스의 생성자를 호출
+  // : super(...) 구문은 초기화 리스트로, 부모 클래스 생성자 호출을 의미
   Student(String name, int age, this.school) : super(name, age);
   
+  // @override 어노테이션은 메서드가 부모 클래스의 메서드를 재정의함을 명시
   @override
   void introduce() {
     print('안녕하세요, 저는 $school에 다니는 $name이고 $age살입니다.');
   }
   
-  // 추가 메서드
+  // 자식 클래스만의 추가 메서드
   void study() {
     print('$name이(가) 공부하고 있습니다.');
   }
 }
 ```
 
-#### 추상 클래스
+**설명:**
+1. **extends:** `Student` 클래스가 `Person` 클래스로부터 상속받음을 선언합니다.
+2. **초기화 리스트:** `: super(name, age)`는 부모 클래스 생성자를 호출하여 부모 클래스의 속성을 초기화합니다.
+3. **메서드 오버라이드:** `@override` 어노테이션으로 부모 클래스의 메서드를 재정의합니다. 이는 선택사항이지만 코드 가독성과 안전성을 위해 권장됩니다.
+4. **확장:** 자식 클래스는 부모 클래스의 모든 속성과 메서드를 상속받으면서 새로운 속성과 메서드를 추가할 수 있습니다.
+
+**상속의 이점:**
+- 코드 재사용성 증가
+- 계층적 관계 표현
+- 다형성 구현 가능
+
+**사용 예시:**
 ```dart
+void main() {
+  var student = Student('김철수', 20, '서울대학교');
+  
+  // 재정의된 메서드 호출
+  student.introduce();  // 출력: 안녕하세요, 저는 서울대학교에 다니는 김철수이고 20살입니다.
+  
+  // 자식 클래스에서 추가된 메서드 호출
+  student.study();  // 출력: 김철수이(가) 공부하고 있습니다.
+  
+  // Student는 Person의 하위 타입이므로 Person 변수에 할당 가능
+  Person person = Student('이영희', 22, '연세대학교');
+  person.introduce();  // 다형성: 런타임에 실제 객체 타입의 메서드가 호출됨
+}
+```
+
+#### 추상 클래스
+
+**추상 클래스란?**
+추상 클래스는 직접 인스턴스화할 수 없고, 하위 클래스에서 구현해야 하는 메서드를 정의하는 청사진 역할을 하는 클래스입니다. Dart에서는 `abstract` 키워드를 사용하여 추상 클래스를 선언합니다.
+
+```dart
+// abstract 키워드로 추상 클래스 선언
 abstract class Shape {
+  // 구현부가 없는 추상 메서드
+  // 하위 클래스에서 반드시 구현해야 함
   double calculateArea();
   double calculatePerimeter();
+  
+  // 추상 클래스에도 구현된 메서드를 포함할 수 있음
+  void printInfo() {
+    print('면적: ${calculateArea()}, 둘레: ${calculatePerimeter()}');
+  }
 }
 
+// 추상 클래스 구현
 class Circle extends Shape {
   double radius;
   
   Circle(this.radius);
   
+  // 추상 메서드 구현
   @override
   double calculateArea() {
     return 3.14 * radius * radius;
@@ -68,6 +148,36 @@ class Circle extends Shape {
 }
 ```
 
+**설명:**
+1. **추상 클래스:** `abstract` 키워드로 선언하며, 직접 인스턴스화할 수 없습니다.
+2. **추상 메서드:** 구현부(`{}`)가 없고 세미콜론(`;`)으로 끝나는 메서드로, 하위 클래스에서 반드시 구현해야 합니다.
+3. **일반 메서드:** 추상 클래스 내에도 구현된 일반 메서드를 포함할 수 있습니다.
+4. **구현 강제:** 하위 클래스는 모든 추상 메서드를 구현해야 하며, 그렇지 않으면 컴파일 에러가 발생합니다.
+
+**추상 클래스의 목적:**
+- 공통 인터페이스 정의
+- 다형성 지원
+- 코드 재사용성 향상
+- 구현의 강제
+
+**사용 예시:**
+```dart
+void main() {
+  // var shape = Shape();  // 오류: 추상 클래스는 인스턴스화할 수 없음
+  
+  var circle = Circle(5.0);
+  print('원 면적: ${circle.calculateArea()}');  // 출력: 원 면적: 78.5
+  print('원 둘레: ${circle.calculatePerimeter()}');  // 출력: 원 둘레: 31.4
+  
+  // 추상 클래스의 구현된 메서드 호출
+  circle.printInfo();  // 출력: 면적: 78.5, 둘레: 31.4
+  
+  // 다형성: Shape 타입으로 Circle 참조
+  Shape shape = Circle(3.0);
+  shape.printInfo();  // 동적 바인딩으로 Circle의 구현이 호출됨
+}
+```
+
 #### 실습 문제: 도형 계층
 1. `Shape` 추상 클래스를 상속받는 `Rectangle`, `Triangle` 클래스를 구현하세요.
 2. 각 클래스는 적절한 생성자와 면적/둘레 계산 메서드를 가져야 합니다.
@@ -75,9 +185,18 @@ class Circle extends Shape {
 
 ### 1.2 인터페이스와 믹스인
 
+Dart는 Java나 C#과 달리 명시적인 `interface` 키워드가 없습니다. 대신 모든 클래스는 암시적으로 인터페이스 역할을 할 수 있으며, 믹스인(mixin)이라는 특별한 코드 재사용 메커니즘을 제공합니다.
+
 #### 인터페이스 (Dart에서는 암시적)
+
+**Dart의 인터페이스란?**
+Dart에서는 모든 클래스가 암시적으로 인터페이스를 정의합니다. 인터페이스는 클래스가 어떤 메서드를 구현해야 하는지 정의하는 계약으로 볼 수 있습니다. `implements` 키워드를 사용해 다른 클래스의 인터페이스를 구현할 수 있습니다.
+
 ```dart
+// 암시적 인터페이스 역할을 하는 클래스
 class Flyable {
+  // 이 메서드는 구현체가 있지만, 인터페이스로 사용될 때는
+  // 메서드 시그니처만 중요함
   void fly() {
     print('날고 있습니다.');
   }
@@ -85,9 +204,11 @@ class Flyable {
 
 // implements를 통한 인터페이스 구현
 class Bird implements Flyable {
+  // Flyable의 모든 메서드를 반드시 구현해야 함
   @override
   void fly() {
     print('새가 날개로 날고 있습니다.');
+    // 주의: Flyable.fly()의 원래 구현은 상속되지 않음
   }
 }
 
@@ -99,9 +220,64 @@ class Airplane implements Flyable {
 }
 ```
 
-#### 믹스인 (with 키워드)
+**설명:**
+1. **암시적 인터페이스:** Dart에서 모든 클래스는 자동으로 인터페이스를 정의합니다.
+2. **implements:** 클래스가 다른 클래스의 인터페이스를 구현함을 선언합니다.
+3. **구현 의무:** `implements`를 사용하면 해당 인터페이스의 모든 메서드와 속성을 구현해야 합니다.
+4. **구현 vs 상속:** `implements`는 메서드 시그니처만 가져오고 구현은 가져오지 않습니다. 따라서 `extends`와 다릅니다.
+5. **다중 인터페이스:** Dart는 다중 상속을 지원하지 않지만, 여러 인터페이스 구현은 가능합니다.
+
+**실제 사용 예시:**
 ```dart
+void main() {
+  Bird bird = Bird();
+  Airplane airplane = Airplane();
+  
+  bird.fly();  // 출력: 새가 날개로 날고 있습니다.
+  airplane.fly();  // 출력: 비행기가 엔진으로 날고 있습니다.
+  
+  // 다형성: Flyable 타입으로 다양한 구현체 참조
+  List<Flyable> flyingObjects = [bird, airplane];
+  for (var obj in flyingObjects) {
+    obj.fly();  // 각 객체의 구현에 따라 다른 동작 수행
+  }
+  
+  // 여러 인터페이스 구현 예시
+  var drone = Drone();
+  drone.fly();
+  drone.takePhoto();
+}
+
+// 추가 인터페이스
+class Photographable {
+  void takePhoto() {
+    print('사진을 찍습니다.');
+  }
+}
+
+// 여러 인터페이스 구현
+class Drone implements Flyable, Photographable {
+  @override
+  void fly() {
+    print('드론이 프로펠러로 날고 있습니다.');
+  }
+  
+  @override
+  void takePhoto() {
+    print('드론이 공중에서 사진을 찍습니다.');
+  }
+}
+```
+
+#### 믹스인 (with 키워드)
+
+**믹스인이란?**
+믹스인(mixin)은 여러 클래스 계층에서 코드를 재사용하기 위한 Dart의 특별한 메커니즘입니다. 다중 상속의 장점을 제공하면서 단점을 피할 수 있게 해줍니다. `mixin` 키워드로 선언하고 `with` 키워드로 사용합니다.
+
+```dart
+// mixin 키워드로 믹스인 선언
 mixin Logger {
+  // 믹스인 내부 메서드
   void log(String message) {
     print('로그: $message');
   }
@@ -113,16 +289,89 @@ mixin Validator {
   }
 }
 
+// with 키워드로 여러 믹스인 적용
 class DataProcessor with Logger, Validator {
   void process(String data) {
-    if (validate(data)) {
-      log('데이터 처리 시작: $data');
+    if (validate(data)) {  // Validator의 메서드 사용
+      log('데이터 처리 시작: $data');  // Logger의 메서드 사용
       // 데이터 처리 로직
       log('데이터 처리 완료');
     } else {
       log('유효하지 않은 데이터');
     }
   }
+}
+```
+
+**설명:**
+1. **믹스인 정의:** `mixin` 키워드를 사용해 정의합니다. 믹스인은 인스턴스화할 수 없습니다.
+2. **믹스인 적용:** `with` 키워드를 사용해 하나 이상의 믹스인을 클래스에 적용합니다.
+3. **코드 재사용:** 믹스인의 모든 메서드와 속성은 적용된 클래스에서 사용 가능합니다.
+4. **상속 순서:** 믹스인은 오른쪽에서 왼쪽 순서로 적용되며, 같은 이름의 메서드가 있을 경우 가장 오른쪽의 것이 우선합니다.
+5. **제한 사항:** `on` 키워드를 사용하여 특정 클래스나 그 하위 클래스에만 믹스인을 적용하도록 제한할 수 있습니다.
+
+**믹스인 vs 상속 vs 인터페이스:**
+- **상속(extends):** 단일 부모로부터 구현과 타입을 모두 상속
+- **인터페이스(implements):** 여러 타입을 구현하지만 구현 코드는 상속받지 않음
+- **믹스인(with):** 여러 소스로부터 구현을 재사용하지만 타입 계층은 변경하지 않음
+
+**믹스인 제한하기:**
+```dart
+// AnimatedObject 클래스나 그 하위 클래스에만 적용 가능한 믹스인
+mixin Animation on AnimatedObject {
+  void animate() {
+    // AnimatedObject의 메서드를 사용할 수 있음
+    prepareCanvas();
+    // 애니메이션 로직
+  }
+}
+
+class AnimatedObject {
+  void prepareCanvas() {
+    print('캔버스 준비');
+  }
+}
+
+class AnimatedSprite extends AnimatedObject with Animation {
+  // Animation 믹스인 사용 가능
+}
+
+// class StaticImage with Animation {}  // 오류: AnimatedObject 하위 클래스가 아님
+```
+
+**사용 예시:**
+```dart
+void main() {
+  var processor = DataProcessor();
+  processor.process('테스트 데이터');
+  // 출력:
+  // 로그: 데이터 처리 시작: 테스트 데이터
+  // 로그: 데이터 처리 완료
+  
+  processor.process('');
+  // 출력:
+  // 로그: 유효하지 않은 데이터
+  
+  // 믹스인 충돌 해결 예시
+  var musicPlayer = MusicPlayer();
+  musicPlayer.play();  // AudioPlayer의 play()가 호출됨 (가장 오른쪽 믹스인)
+}
+
+// 믹스인 충돌 예시
+mixin VideoPlayer {
+  void play() {
+    print('비디오 재생 중');
+  }
+}
+
+mixin AudioPlayer {
+  void play() {
+    print('오디오 재생 중');
+  }
+}
+
+class MusicPlayer with VideoPlayer, AudioPlayer {
+  // AudioPlayer의 play()가 사용됨 (가장 오른쪽 믹스인)
 }
 ```
 
